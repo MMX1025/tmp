@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ring Ring 实验</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    #progress-bar {
+      width: 100%;
+      height: 30px;
+      background-color: #f3f3f3;
+      margin-top: 30px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    #progress {
+      height: 100%;
+      width: 0%;
+      background-color: #4caf50;
+      color: white;
+      text-align: center;
+      line-height: 30px;
+      font-weight: bold;
+      transition: width 0.5s ease-in-out;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Ring Ring 实验</h1>
+<p>本实验将持续约 90 分钟，共 18 轮，每轮 5 分钟。</p>
+<div id="progress-bar">
+  <div id="progress">0%</div>
+</div>
+
+<button id="startBtn">开始实验</button>
+
+<audio id="audio" src="https://raw.githubusercontent.com/MMX1025/tmp/main/ding.wav" preload="auto"></audio>
+
+<script>
+  const totalRounds = 18;
+  let currentRound = 0;
+
+  const audio = document.getElementById('audio');
+  const progress = document.getElementById('progress');
+
+  // 用户第一次交互时解锁音频
+  function unlockAudio() {
+    if (audio.paused) {
+      audio.play().catch(() => {});
+    }
+    document.body.removeEventListener('click', unlockAudio);
+  }
+
+  // 播放声音函数
+  function playSound() {
+    audio.currentTime = 0; // 重置播放位置
+    audio.play().catch(err => console.log("无法播放声音", err));
+  }
+
+  // 开始新一轮
+  function startNextRound() {
+    currentRound++;
+    updateProgress();
+
+    if (currentRound > totalRounds) {
+      alert("实验已完成！");
+      return;
+    }
+
+    // 打印当前轮次
+    console.log(`第 ${currentRound} 轮开始`);
+
+    // 随机播放时间点
+    let t1 = Math.random() * 300;
+    let t2 = Math.random() * 300;
+
+    setTimeout(playSound, t1 * 1000);
+    setTimeout(playSound, t2 * 1000);
+
+    // 5分钟后进入下一轮
+    setTimeout(startNextRound, 300 * 1000);
+  }
+
+  // 更新进度条
+  function updateProgress() {
+    let percent = Math.round((currentRound / totalRounds) * 100);
+    progress.style.width = percent + "%";
+    progress.textContent = percent + "%";
+  }
+
+  // 绑定开始按钮
+  document.getElementById('startBtn').addEventListener('click', () => {
+    document.getElementById('startBtn').disabled = true;
+    startNextRound();
+  });
+
+  // 首次点击页面唤醒音频
+  document.body.addEventListener('click', unlockAudio);
+</script>
+
+</body>
+</html>
